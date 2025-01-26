@@ -19,6 +19,7 @@ def get_github_repos():
     if response.status_code == 200:
         return response.json()
     else:
+        st.error(f"Erreur de récupération des repos : {response.status_code}")
         return []
 
 # Fonction GPT-4 pour générer des réponses
@@ -83,8 +84,8 @@ query = st.text_input("Entrez un mot-clé pour rechercher des repos :", "")
 
 if query:
     repos = get_github_repos()
-    filtered_repos = [repo for repo in repos if query.lower() in repo["name"].lower()]
-
+    filtered_repos = [repo for repo in repos if query.lower() in repo["name"].lower() or (repo["description"] and query.lower() in repo["description"].lower())]
+    
     if filtered_repos:
         st.write(f"**Résultats pour '{query}' :**")
         for repo in filtered_repos:
