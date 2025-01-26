@@ -10,7 +10,7 @@ load_dotenv()
 # Configuration des clés API OpenAI
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
-# URL GitHub pour récupérer les repos
+# URL GitHub pour récupérer les repos personnels
 GITHUB_API_URL = "https://api.github.com/users/tucommenceapousser/repos"
 
 # Fonction pour récupérer les repos GitHub
@@ -84,14 +84,14 @@ query = st.text_input("Entrez un mot-clé pour rechercher des repos :", "")
 
 if query:
     repos = get_github_repos()
-    filtered_repos = [repo for repo in repos if query.lower() in repo["name"].lower() or (repo["description"] and query.lower() in repo["description"].lower())]
+    filtered_repos = [repo for repo in repos if query.lower() in repo["name"].lower()]
     
     if filtered_repos:
         st.write(f"**Résultats pour '{query}' :**")
         for repo in filtered_repos:
             st.write(f"[{repo['name']}]({repo['html_url']}) - {repo['description']}")
     else:
-        st.write("Aucun repo trouvé pour cette recherche.")
+        st.write(f"Aucun repo trouvé pour '{query}'.")
 
 # Chat GPT-4
 st.subheader("Pose une question à GPT-4")
