@@ -27,7 +27,7 @@ def chat_gpt(query):
     response = openai.Completion.create(
         engine="gpt-4", 
         prompt=query, 
-        max_tokens=150
+        max_tokens=1500
     )
     return response.choices[0].text.strip()
 
