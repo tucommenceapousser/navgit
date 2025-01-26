@@ -1,8 +1,8 @@
 import streamlit as st
 import requests
 import openai
-from dotenv import load_dotenv
 import os
+from dotenv import load_dotenv
 
 # Charger les variables d'environnement depuis le fichier .env
 load_dotenv()
@@ -24,21 +24,29 @@ def get_github_repos():
 
 # Fonction GPT-4 pour générer des réponses
 def chat_gpt(query):
-    response = openai.Completion.create(
-        engine="gpt-4", 
-        prompt=query, 
-        max_tokens=1500
-    )
-    return response.choices[0].text.strip()
+    try:
+        response = openai.Completion.create(
+            engine="gpt-4", 
+            prompt=query, 
+            max_tokens=150
+        )
+        return response.choices[0].text.strip()
+    except openai.error.AuthenticationError:
+        st.error("Erreur d'authentification avec OpenAI. Vérifiez votre clé API.")
+        return ""
 
 # Fonction DALL-E pour générer des images
 def generate_image(description):
-    response = openai.Image.create(
-        prompt=description,
-        n=1,
-        size="1024x1024"
-    )
-    return response['data'][0]['url']
+    try:
+        response = openai.Image.create(
+            prompt=description,
+            n=1,
+            size="1024x1024"
+        )
+        return response['data'][0]['url']
+    except Exception as e:
+        st.error(f"Erreur lors de la génération de l'image : {e}")
+        return ""
 
 # Titre de l'application
 st.title("Hacker Tools Repository")
@@ -99,7 +107,8 @@ question = st.text_input("Que souhaitez-vous savoir ?", "")
 
 if question:
     response = chat_gpt(question)
-    st.write("**Réponse de GPT-4 :**", response)
+    if response:
+        st.write("**Réponse de GPT-4 :**", response)
 
 # Génération d'images avec DALL-E
 st.subheader("Générer une image avec DALL-E")
@@ -107,7 +116,8 @@ image_prompt = st.text_input("Décrivez l'image que vous souhaitez générer :")
 
 if image_prompt:
     image_url = generate_image(image_prompt)
-    st.image(image_url, caption="Image générée par DALL-E", use_column_width=True)
+    if image_url:
+        st.image(image_url, caption="Image générée par DALL-E", use_column_width=True)
 
 # Footer
 st.markdown("<br><hr><p style='text-align: center;'>Créé par trhacknon | <a href='https://www.facebook.com/share/g/SpQ3RD4dqmVHwfFm/'>Facebook</a></p>", unsafe_allow_html=True)
